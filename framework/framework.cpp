@@ -20,10 +20,14 @@ void on_client_request(EventLoop *event_loop, int server_sockfd, uint32_t events
 
         if (clientfd < 0)
             break;
+        
+        printf("Recieved a client request: %d\n", clientfd);
 
         fcntl(clientfd, F_SETFL, O_NONBLOCK);
         
         auto connection = std::make_shared<Connection>(clientfd, event_loop);
+
+        printf("Adding the clientfd in the event_loop\n");
 
         event_loop->add(clientfd,
                         events,
@@ -82,7 +86,7 @@ App::App(const std::string& host, unsigned int port, unsigned int max_conn) : li
 
 App::~App()
 {
-    close(this->listener.socketfd);    
+    close(this->listener.socketfd);
 }
 
 void App::run()
@@ -92,7 +96,7 @@ void App::run()
     
     // Adding the on event function for the socketfd
     // When there is / are client/s then event loop will call our 'on_client_request'
-    
+    printf("Adding the server socketfd to the eventloop\n"); 
     event_loop.add(this->listener.socketfd,
                    EPOLLIN,
                    [&event_loop, &socketfd](uint32_t events) {

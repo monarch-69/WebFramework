@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  framework-dev:
+    image: framework-dev
+    container_name: framework-dev
+    stdin_open: true # for the -i flag
+    tty: true # for -t flag
+
+    ports:
+      - "6969:6969"
+
+    volumes:
+      - .:/app # volume or directory to mount
+
+    working_dir: /app
+

@@ -19,6 +19,9 @@ EventLoop::EventLoop()
 
 EventLoop::~EventLoop()
 {
+    for (auto pair: this->callbacks)
+        close(pair.first);
+
     close(this->epoll_fd);
 }
 
@@ -31,6 +34,7 @@ void EventLoop::add(int fd, uint32_t events, Callback cb)
 
     if (epoll_ctl(this->epoll_fd, EPOLL_CTL_ADD, fd, &event) < 0) {
         perror("Failed to add fd");
+        return;
     }
 
     this->callbacks.insert({ fd, std::move(cb) });
@@ -66,7 +70,7 @@ void EventLoop::run()
             int fd = events[i].data.fd;
             
             if (this->callbacks.find(fd) != this->callbacks.end())
-                this->callbacks[fd](events[fd].events);
+                this->callbacks[fd](events[i].events);
         }
     }
 }

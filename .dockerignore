@@ -1,0 +1,8 @@
+# For git
+.git
+.gitignore
+
+Dockerfile
+*.yaml
+
+setup.sh

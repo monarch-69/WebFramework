@@ -8,7 +8,6 @@
 
 enum class ConnState {
     Reading,
-    Processing,
     Writing,
     Closed
 };
@@ -18,12 +17,14 @@ public:
     explicit Connection(int fd, EventLoop* event_loop);
     void on_event(uint32_t events);
     void cleanup();
-    ~Connection();
+    ~Connection() = default;
     
 private:
     void handle_read();
     void handle_write();
-    HttpRequest* parse_http_request();
+    void parse_req_line(HttpRequest* req, std::string& req_line);
+    void parse_header_and_body(HttpRequest* req, std::string& to_parse);
+    HttpRequest parse_http_request();
 
     int fd;
     EventLoop* event_loop;
