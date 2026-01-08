@@ -4,8 +4,11 @@ services:
   framework-dev:
     image: framework-dev
     container_name: framework-dev
-    stdin_open: true # for the -i flag
-    tty: true # for -t flag
+    stdin_open: false # for the -i flag
+    tty: false # for -t flag
+    cpus: 2
+    mem_limit: 1g
+    
 
     ports:
       - "6969:6969"
@@ -15,3 +18,4 @@ services:
 
     working_dir: /app
 
+    command: sh -c "make && ./server"

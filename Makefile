@@ -37,7 +37,7 @@ $(DEBUG_TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -fr $(OBJS) $(TARGET) $(DEBUG_DIR)/
 
 
 .PHONY: all clean debug

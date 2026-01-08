@@ -7,8 +7,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "framework.hpp"
-#include "../system/eventloop.hpp"
-#include "../system/connection.hpp"
+#include "system/eventloop.hpp"
+#include "system/connection.hpp"
 
 void on_client_request(EventLoop *event_loop, int server_sockfd, uint32_t events)
 {
@@ -37,7 +37,7 @@ void on_client_request(EventLoop *event_loop, int server_sockfd, uint32_t events
     }
 }
 
-App::App(const std::string& host, unsigned int port, unsigned int max_conn) : listener(host, port, max_conn)
+App::App() : config(), listener(config.host, config.port, config.max_conn)
 {
     printf("host: %s, port: %d, max_conn: %d\n", this->listener.host.c_str(), this->listener.port, this->listener.max_conn);
 
@@ -55,14 +55,15 @@ App::App(const std::string& host, unsigned int port, unsigned int max_conn) : li
         exit(SOCK_OPTS_SET_FAILED_ERROR);
     }
 
-    sockaddr_in address;
+    sockaddr_in address{};
     address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
 
-    // Interface initialization
-    if (inet_pton(AF_INET, this->listener.host.c_str(), &address.sin_addr) <= 0) {
-        perror("Invalid interface.");
-        exit(INVALID_INTERFACE_ERROR);
-    }
+    /*// Interface initialization*/
+    /*if (inet_pton(AF_INET, this->listener.host.c_str(), &address.sin_addr) <= 0) {*/
+    /*    perror("Invalid interface.");*/
+    /*    exit(INVALID_INTERFACE_ERROR);*/
+    /*}*/
 
     // Binding to socket
     address.sin_port = htons((uint16_t)this->listener.port);
@@ -82,6 +83,7 @@ App::App(const std::string& host, unsigned int port, unsigned int max_conn) : li
         perror("Error while setting file status for listener as O_NONBLOCK");
         exit(FCNTL_SET_FAILED_ERROR);
     }
+
 }
 
 App::~App()

@@ -1,11 +1,15 @@
 #pragma once
 
-#include <string>
 #include <cstdint>
-#include "../system/eventloop.hpp"
+#include <unordered_map>
+#include "system/eventloop.hpp"
+#include "config/config.hpp"
+#include "config/listener.hpp"
+#include "http/httprequest.hpp"
 
 
 // Errors numbers
+#define SUCCESS 0
 #define SOCKET_FD_FAIL_ERROR 1
 #define INVALID_INTERFACE_ERROR 2
 #define BIND_FAIL_ERROR 3
@@ -17,24 +21,20 @@
 #define MAX_CONN_TO_LISTEN 5
 
 class App {
+
+using Handler = std::function<void(const HttpRequest&)>;
+
 public:
-    App(const std::string& host, unsigned int port, unsigned int max_conn);
+    App();
     ~App();
     
     void run();
 
 private:
-    struct TcpListener {
-    public:
-        TcpListener(const std::string& host, unsigned int port, unsigned int max_conn) : host(host), port(port), max_conn(max_conn) {}
-
-        int socketfd;
-        unsigned int port;
-        unsigned int max_conn;
-        std::string host;
-    };
-    
+    std::string work_dir{}; // This is working directory and should not be confused with the parent dir. Parent dir part of working dir
+    Config config; 
     TcpListener listener;
+    std::unordered_map<std::string, Handler> handlers{}; // Initializing empty handler at first
 };
 
 // A routine to handle a client request and convert it to a connection of Type Connection
